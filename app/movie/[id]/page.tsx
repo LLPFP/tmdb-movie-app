@@ -1,66 +1,69 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
-import Image from "next/image"
-import Link from "next/link"
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
 
 // Reemplazar la constante API_KEY y la forma de hacer fetch
 // Eliminar esta línea:
 // const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY
 // Y reemplazarla por:
-const TOKEN = process.env.NEXT_PUBLIC_TMDB_TOKEN
-const BASE_URL = "https://api.themoviedb.org/3"
+const TOKEN = process.env.NEXT_PUBLIC_TMDB_TOKEN;
+const BASE_URL = "https://api.themoviedb.org/3";
 
 interface MovieDetails {
-  id: number
-  title: string
-  overview: string
-  poster_path: string
-  backdrop_path: string
-  release_date: string
-  vote_average: number
-  runtime: number
-  genres: { id: number; name: string }[]
+  id: number;
+  title: string;
+  overview: string;
+  poster_path: string;
+  backdrop_path: string;
+  release_date: string;
+  vote_average: number;
+  runtime: number;
+  genres: { id: number; name: string }[];
 }
 
 export default function MovieDetailPage() {
-  const params = useParams()
-  const [movie, setMovie] = useState<MovieDetails | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const params = useParams();
+  const [movie, setMovie] = useState<MovieDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Luego, actualizar la función fetchMovieDetails para usar el token:
     const fetchMovieDetails = async () => {
-      if (!params.id) return
+      if (!params.id) return;
 
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
       try {
-        const response = await fetch(`${BASE_URL}/movie/${params.id}?language=es-ES`, {
-          headers: {
-            Authorization: `Bearer ${TOKEN}`,
-            "Content-Type": "application/json",
-          },
-        })
+        const response = await fetch(
+          `${BASE_URL}/movie/${params.id}?language=es-ES`,
+          {
+            headers: {
+              Authorization: `Bearer ${TOKEN}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (!response.ok) {
-          throw new Error("Error al cargar detalles de la película")
+          throw new Error("Error al cargar detalles de la película");
         }
 
-        const data = await response.json()
-        setMovie(data)
+        const data = await response.json();
+        setMovie(data);
       } catch (error) {
-        setError(error instanceof Error ? error.message : "Error desconocido")
+        setError(error instanceof Error ? error.message : "Error desconocido");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchMovieDetails()
-  }, [params.id])
+    fetchMovieDetails();
+  }, [params.id]);
 
   if (loading) {
     return (
@@ -70,20 +73,22 @@ export default function MovieDetailPage() {
           <p className="mt-2">Cargando...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (error || !movie) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 mb-4">{error || "Película no encontrada"}</p>
+          <p className="text-red-600 mb-4">
+            {error || "Película no encontrada"}
+          </p>
           <Link href="/" className="text-blue-600 hover:underline">
             Volver al inicio
           </Link>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -101,7 +106,9 @@ export default function MovieDetailPage() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <Link href="/" className="text-blue-600 hover:underline mb-4 inline-block">
+        <Link
+          href="/"
+          className="text-blue-600 hover:underline mb-4 inline-block">
           ← Volver al inicio
         </Link>
 
@@ -123,12 +130,15 @@ export default function MovieDetailPage() {
 
               <div className="mb-4">
                 <span className="text-yellow-500 text-xl">★</span>
-                <span className="ml-1 text-lg">{movie.vote_average.toFixed(1)}/10</span>
+                <span className="ml-1 text-lg">
+                  {movie.vote_average.toFixed(1)}/10
+                </span>
               </div>
 
               <div className="mb-4">
                 <p>
-                  <strong>Fecha de estreno:</strong> {new Date(movie.release_date).toLocaleDateString()}
+                  <strong>Fecha de estreno:</strong>{" "}
+                  {new Date(movie.release_date).toLocaleDateString()}
                 </p>
                 <p>
                   <strong>Duración:</strong> {movie.runtime} minutos
@@ -139,7 +149,9 @@ export default function MovieDetailPage() {
                 <strong>Géneros:</strong>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {movie.genres.map((genre) => (
-                    <span key={genre.id} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                    <span
+                      key={genre.id}
+                      className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
                       {genre.name}
                     </span>
                   ))}
@@ -148,12 +160,14 @@ export default function MovieDetailPage() {
 
               <div>
                 <h2 className="text-xl font-semibold mb-2">Sinopsis</h2>
-                <p className="text-gray-700 leading-relaxed">{movie.overview}</p>
+                <p className="text-gray-700 leading-relaxed">
+                  {movie.overview}
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
